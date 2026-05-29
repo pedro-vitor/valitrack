@@ -6,7 +6,8 @@ import 'package:valitrack/providers/store_list.dart';
 import 'package:valitrack/util/app_routes.dart';
 
 class ListStoreItem extends StatelessWidget {
-  const ListStoreItem({super.key});
+  final void Function() showModalUpdate;
+  const ListStoreItem({super.key, required this.showModalUpdate});
 
   @override
   Widget build(BuildContext context) {
@@ -61,11 +62,7 @@ class ListStoreItem extends StatelessWidget {
                   title: const Text('Editar Loja'),
                   onTap: () {
                     Navigator.of(context).pop();
-                    // Navegar para a tela de edição da loja
-                    // Navigator.of(context).pushNamed(
-                    //   AppRoutes.editStoreScreen,
-                    //   arguments: store,
-                    // );
+                    showModalUpdate();
                   },
                 ),
                 ListTile(
@@ -77,7 +74,7 @@ class ListStoreItem extends StatelessWidget {
                   onTap: () {
                     Navigator.of(context).pop();
                     // Chamar a função de exclusão da loja
-                    deleteStore(context, store.id);
+                    deleteStore(context, store.id!);
                   },
                 ),
               ],

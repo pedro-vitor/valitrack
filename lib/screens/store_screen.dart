@@ -7,16 +7,38 @@ import 'package:valitrack/components/mainAppbar/main_appbar.dart';
 import 'package:valitrack/model/store.dart';
 import 'package:valitrack/providers/store_list.dart';
 
-class StoreScreen extends StatelessWidget {
+class StoreScreen extends StatefulWidget {
+
   const StoreScreen({super.key});
 
-  void _showFormStore(BuildContext ctx, Function(Store) addStore) {
+  @override
+  State<StoreScreen> createState() => _StoreScreenState();
+}
+
+class _StoreScreenState extends State<StoreScreen> {
+  // Carrega os produtos da loja para mostrar a quantidade de produtos registrados, a quantidade de produtos para expirar e a quantidade de produtos expirados.
+  late Future<void> _future;
+
+  @override
+  initState() {
+    super.initState();
+
+    //iniciar o future para carregar os produtos da loja, fora do build para evitar que ele seja chamado toda vez que o widget for reconstruido.
+    _future = context.read<StoreList>().loadProducts();
+  }
+
+  void _showFormStore(
+    BuildContext ctx,
+    Function(Store) onSubmit, [
+    Store? store,
+  ]) {
     showModalBottomSheet(
       context: ctx,
       builder: (_) {
         return StoreForm(
-          // funcao para adicionar uma nova loja.
-          addStore: addStore,
+          // funcao para adicionar ou atualizar uma loja.
+          onSubmit: onSubmit,
+          store: store,
         );
       },
     );
@@ -34,7 +56,7 @@ class StoreScreen extends StatelessWidget {
       appBar: const MainAppbar(title: 'Lojas'),
       drawer: const MainDrawer(),
       body: FutureBuilder(
-        future: provider.loadProducts(),
+        future: _future,
         builder: (ctx, snapshot) =>
             snapshot.connectionState == ConnectionState.waiting
             ? const Center(child: CircularProgressIndicator())
@@ -49,9 +71,21 @@ class StoreScreen extends StatelessWidget {
                           itemBuilder: (ctx, index) {
                             var store = stores[index];
 
-                            return ChangeNotifierProvider.value(
-                              value: store,
-                              child: ListStoreItem(key: ValueKey(store.id)),
+                            return Selector<StoreList, Store>(
+                              selector: (_, storeList) =>
+                                  storeList.getById(store.id!)!,
+                              builder: (context, store, _) =>
+                                  ChangeNotifierProvider.value(
+                                    value: store,
+                                    child: ListStoreItem(
+                                      key: ValueKey(store.id),
+                                      showModalUpdate: () => _showFormStore(
+                                        context,
+                                        provider.updateStore,
+                                        store,
+                                      ),
+                                    ),
+                                  ),
                             );
                           },
                         );

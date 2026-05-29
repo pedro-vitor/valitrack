@@ -7,11 +7,19 @@ class StoreList with ChangeNotifier {
 
   int get itemsCount => _items.length;
 
-// devolver uma lista apenas dos valores.
+  // devolver uma lista apenas dos valores.
   List<Store> get items => _items.values.toList();
+
+  Store? getById(int id) {
+    if(_items.containsKey(id)) {
+      return _items[id]!;
+    }
+    return null;
+  }
 
   // carregar lojas
   Future<void> loadProducts() async {
+    _items = {};
     final datasList = await StoreTable.getAllStores();
     _items = {
       for (var item in datasList)
@@ -21,24 +29,37 @@ class StoreList with ChangeNotifier {
           quantityRegisteredProducts: item['quantityRegisteredProducts'] ?? 0,
           quantityProductsToExpire: item['quantityProductsToExpire'] ?? 0,
           quantityExpiredProducts: item['quantityExpiredProducts'] ?? 0,
-        )
+        ),
     };
     notifyListeners();
   }
 
-// Adicionar uma nova loja a lista.
+  // Adicionar uma nova loja a lista.
   void addStore(Store store) {
-    _items.putIfAbsent(store.id, () => store);
+    if (store.id != null) {
+      _items.putIfAbsent(store.id!, () => store);
+    }
     StoreTable.insert({
       'name': store.name,
       'quantityRegisteredProducts': store.quantityRegisteredProducts,
       'quantityProductsToExpire': store.quantityProductsToExpire,
       'quantityExpiredProducts': store.quantityExpiredProducts,
-    });
+    }).then((_) => loadProducts());
     notifyListeners();
   }
 
-// deletar uma loja.
+  void updateStore(Store store) {
+    if (!_items.containsKey(store.id!)) return;
+
+    _items.update(store.id!, (_) => store);
+
+    StoreTable.update(store.id!, {
+      'name': store.name,
+    }).then((_) => loadProducts());
+    notifyListeners();
+  }
+
+  // deletar uma loja.
   void delete(int id) {
     _items.remove(id);
     StoreTable.delete(id);

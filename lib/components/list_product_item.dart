@@ -131,7 +131,7 @@ class ListProductItem extends StatelessWidget {
                     : Image.asset(
                         'assets/image/no_image.png',
                         height: 60,
-                      ),
+                      ), 
               ),
             ),
             title: Text(

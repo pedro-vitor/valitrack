@@ -60,7 +60,7 @@ class ShortDatedProduct extends StatelessWidget {
     }
 
     return FutureBuilder(
-      future: provider.getSessionsPerDueDate(store.id),
+      future: provider.getSessionsPerDueDate(store.id!),
       builder: ((context, snapshot) {
         if(snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(

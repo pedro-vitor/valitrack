@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class Store with ChangeNotifier {
-  final int id;
+  int? id;
   String name;
   int quantityRegisteredProducts;
   int quantityProductsToExpire;
   int quantityExpiredProducts;
 
   Store({
-    required this.id,
+    this.id,
     required this.name,
     required this.quantityRegisteredProducts,
     required this.quantityProductsToExpire,

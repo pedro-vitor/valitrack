@@ -1,20 +1,37 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:valitrack/model/store.dart';
 
-class StoreForm extends StatelessWidget {
-  final void Function(Store) addStore;
+class StoreForm extends StatefulWidget {
+  final void Function(Store) onSubmit;
+  final Store? store;
 
-  const StoreForm({super.key, required this.addStore});
+  const StoreForm({super.key, required this.onSubmit, this.store});
+
+  @override
+  State<StoreForm> createState() => _StoreFormState();
+}
+
+class _StoreFormState extends State<StoreForm> {
+  final nameStore = TextEditingController();
+
+  @override
+  initState() {
+    super.initState();
+
+    if (widget.store != null) {
+      nameStore.text = widget.store!.name;
+    }
+
+    nameStore.selection = TextSelection.fromPosition(
+      TextPosition(offset: nameStore.text.length),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final nameStore = TextEditingController();
-
-    Store createNewStore(String nameStore) {
+    Store mountStore(String nameStore, [int? storeId]) {
       return Store(
-        id: Random().nextInt(10),
+        id: storeId,
         name: nameStore,
         quantityRegisteredProducts: 0,
         quantityProductsToExpire: 0,
@@ -23,13 +40,20 @@ class StoreForm extends StatelessWidget {
     }
 
     submitForm() {
+      if (widget.store != null && nameStore.text == widget.store!.name) {
+        Navigator.pop(context);
+        return;
+      }
+
       final name = nameStore.text;
 
       if (name.isEmpty) return;
 
-      final Store newStore = createNewStore(name);
+      final Store newStore = widget.store == null
+          ? mountStore(name)
+          : mountStore(name, widget.store!.id!);
 
-      addStore(newStore);
+      widget.onSubmit(newStore);
       Navigator.pop(context);
     }
 
@@ -52,6 +76,7 @@ class StoreForm extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              textCapitalization: TextCapitalization.sentences,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -61,15 +86,13 @@ class StoreForm extends StatelessWidget {
                   style: const ButtonStyle(
                     elevation: WidgetStatePropertyAll(2),
                   ),
-                  child: const Text(
-                    'Cadastrar',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  child: Text(
+                    widget.store == null ? 'Cadastrar' : 'Atualizar',
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                )
+                ),
               ],
-            )
+            ),
           ],
         ),
       ),
