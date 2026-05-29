@@ -78,7 +78,7 @@ class _ProductFormState extends State<ProductForm> {
 
       try {
         // provider.saveProduct(_formData);
-        provider.saveProductOnDb(_formData);
+        provider.saveProductOnDb(_formData, int.parse(storeId));
         Navigator.of(context).pop();
       } catch (e) {
         if (!mounted) return;

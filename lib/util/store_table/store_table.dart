@@ -1,3 +1,4 @@
+import 'package:valitrack/model/store.dart';
 import 'package:valitrack/util/db_util.dart';
 import 'package:valitrack/util/names_tables_db.dart';
 
@@ -41,16 +42,16 @@ class StoreTable {
     );
   }
 
-  static Future<void> incrementRegisteredProduct(int id) async {
+  static Future<void> incrementRegisteredProduct(Store store) async {
     final db = await DbUtil.dataBase();
 
     await db.rawUpdate(
       '''
       UPDATE ${NamesTablesDb.store.value}
-      SET quantity = quantity + 1
+      SET quantityRegisteredProducts = quantityRegisteredProducts + 1
       WHERE id = ?
       ''',
-      [id],
+      [store.id],
     );
   }
 }

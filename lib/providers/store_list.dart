@@ -69,7 +69,7 @@ class StoreList with ChangeNotifier {
   void incrementQuantityProduct(int storeId) {
     if (!_items.containsKey(storeId)) return;
     _items[storeId]?.incrementRegisteredProducts();
-    StoreTable.incrementRegisteredProduct(storeId);
+    StoreTable.incrementRegisteredProduct(_items[storeId]!);
     notifyListeners();
   }
 }

@@ -44,8 +44,9 @@ class ProductList with ChangeNotifier {
     return createSessionPerDueDate(products);
   }
 
-  void saveProductOnDb(Map<String, Object> formDatas) {
+  void saveProductOnDb(Map<String, Object> formDatas, int storeId) {
     _addNewProductOnDB(formDatas);
+    providerStore.incrementQuantityProduct(storeId);
     notifyListeners();
   }
 
