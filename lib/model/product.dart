@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:uuid/uuid.dart';
 
 class Product {
@@ -7,7 +5,7 @@ class Product {
   final String description;
   final String codeBar;
   final int quantity;
-  final File? image;
+  final String? image;
   final DateTime dueDate;
   final int storeId;
 

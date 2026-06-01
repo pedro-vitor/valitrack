@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:valitrack/model/product.dart';
@@ -28,7 +26,7 @@ class ProductList with ChangeNotifier {
               description: item['description'] as String,
               codeBar: item['codeBar'] as String,
               quantity: item['quantity'] as int,
-              image: File(item['image'] as String),
+              image: item['image'] as String,
               dueDate: DateTime.parse(item['expireDate'] as String),
               storeId: item['store_id'] as int,
             ),

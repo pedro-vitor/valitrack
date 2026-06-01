@@ -9,13 +9,14 @@ class ListProductItem extends StatelessWidget {
   final Product product;
   final void Function(String) deleteProduct;
   final bool hasDivider;
+  final File? image;
 
-  const ListProductItem({
+  ListProductItem({
     super.key,
     required this.product,
     required this.deleteProduct,
     required this.hasDivider,
-  });
+  }): image = product.image != null ? File(product.image!) : null;
 
   Widget isExpired(DateTime dueDateProduct) {
     final currentDate = DateTime.now();
@@ -59,7 +60,7 @@ class ListProductItem extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: product.image != null
-                  ? Image.file(product.image!)
+                  ? Image.file(image)
                   : Image.asset('assets/image/no_image.png'),
             ),
           ),
@@ -118,14 +119,14 @@ class ListProductItem extends StatelessWidget {
           },
           child: ListTile(
             leading: GestureDetector(
-              onTap: () => showModalImage(context, product.image!),
+              onTap: () => showModalImage(context, image!),
               child: ClipRRect(
                 borderRadius: const BorderRadius.all(
                   Radius.circular(5),
                 ),
                 child: product.image != null
                     ? Image.file(
-                        product.image!,
+                        image!,
                         height: 60,
                       )
                     : Image.asset(
