@@ -6,6 +6,7 @@ class Store with ChangeNotifier {
   int quantityRegisteredProducts;
   int quantityProductsToExpire;
   int quantityExpiredProducts;
+  DateTime createdAt = DateTime.now();
 
   Store({
     this.id,
@@ -15,16 +16,19 @@ class Store with ChangeNotifier {
     required this.quantityExpiredProducts,
   });
 
+  Store.withCreatedAt({
+    this.id,
+    required this.name,
+    required this.quantityRegisteredProducts,
+    required this.quantityProductsToExpire,
+    required this.quantityExpiredProducts,
+    required this.createdAt,
+  });
+
   void incrementRegisteredProducts() {
     quantityRegisteredProducts = quantityRegisteredProducts + 1;
     notifyListeners();
   }
-  /**
-   * ": id = const Uuid().v4()"
-   * é executado antes do construtor, atribuindo o UUID ao Id.
-  */
+  
 
-  /// Cria dois gets para devolver o quanto:
-  ///  1- de produtos cadastrados.
-  ///  2- de produtos proximo ao vencimento (este mês + próx. mês).
 }

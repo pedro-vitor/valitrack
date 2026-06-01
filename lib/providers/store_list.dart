@@ -23,12 +23,13 @@ class StoreList with ChangeNotifier {
     final datasList = await StoreTable.getAllStores();
     _items = {
       for (var item in datasList)
-        item['id']: Store(
+        item['id']: Store.withCreatedAt(
           id: item['id'],
           name: item['name'],
           quantityRegisteredProducts: item['quantityRegisteredProducts'] ?? 0,
           quantityProductsToExpire: item['quantityProductsToExpire'] ?? 0,
           quantityExpiredProducts: item['quantityExpiredProducts'] ?? 0,
+          createdAt: DateTime.parse(item['createdAt']),
         ),
     };
     notifyListeners();
@@ -44,6 +45,7 @@ class StoreList with ChangeNotifier {
       'quantityRegisteredProducts': store.quantityRegisteredProducts,
       'quantityProductsToExpire': store.quantityProductsToExpire,
       'quantityExpiredProducts': store.quantityExpiredProducts,
+      'createdAt': store.createdAt.toIso8601String(),
     }).then((_) => loadProducts());
     notifyListeners();
   }

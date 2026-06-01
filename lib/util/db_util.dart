@@ -18,11 +18,11 @@ class DbUtil {
       onConfigure: (db) => db.execute('PRAGMA foreign_keys = ON'),
       onCreate: (db, version) async {
         await db.execute(
-          'CREATE TABLE ${NamesTablesDb.store.value} (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30) NOT NULL, quantityRegisteredProducts INT NOT NULL, quantityProductsToExpire INT NOT NULL, quantityExpiredProducts INT NOT NULL);',
+          'CREATE TABLE ${NamesTablesDb.store.value} (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30) NOT NULL, quantityRegisteredProducts INT NOT NULL, quantityProductsToExpire INT NOT NULL, quantityExpiredProducts INT NOT NULL, createdAt TEXT NOT NULL);',
         );
 
         await db.execute(
-          'CREATE TABLE product ( id INTEGER PRIMARY KEY AUTOINCREMENT, store_id INTEGER NOT NULL, description VARCHAR(100) NOT NULL, codeBar VARCHAR(13) NOT NULL, quantity INT NOT NULL, image VARCHAR(200) NOT NULL, expireDate TEXT NOT NULL,  FOREIGN KEY (store_id) REFERENCES store(id) ON DELETE CASCADE );',
+          'CREATE TABLE product ( id INTEGER PRIMARY KEY AUTOINCREMENT, store_id INTEGER NOT NULL, description VARCHAR(100) NOT NULL, codeBar VARCHAR(13) NOT NULL, quantity INT NOT NULL, image VARCHAR(200) NOT NULL, expireDate TEXT NOT NULL, createdAt TEXT NOT NULL,  FOREIGN KEY (store_id) REFERENCES store(id) ON DELETE CASCADE );',
         );
       },
       version: 1,

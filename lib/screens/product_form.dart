@@ -71,6 +71,7 @@ class _ProductFormState extends State<ProductForm> {
       }
       _formKey.currentState?.save();
       _formData['store_id'] = storeId;
+      _formData['createdAt'] = DateTime.now().toIso8601String();
 
       setState(() {
         _isLoading = true;

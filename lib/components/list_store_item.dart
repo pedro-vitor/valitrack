@@ -126,7 +126,9 @@ class ListStoreItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${store.quantityRegisteredProducts} produtos totais',
+                  store.quantityRegisteredProducts > 1
+                      ? '${store.quantityRegisteredProducts} cadastrados' 
+                      : '${store.quantityRegisteredProducts} cadastrado',
                   style: const TextStyle(
                     fontSize: 12,
                     color: Colors.grey,

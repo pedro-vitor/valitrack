@@ -8,6 +8,7 @@ class Product {
   final String? image;
   final DateTime dueDate;
   final int storeId;
+  final DateTime createdAt;
 
   Product({
     required this.id,
@@ -17,6 +18,7 @@ class Product {
     this.image,
     required this.dueDate,
     required this.storeId,
+    required this.createdAt,
   });
 
   Product.noId({
@@ -26,5 +28,6 @@ class Product {
     this.image,
     required this.dueDate,
     required this.storeId,
+    required this.createdAt,
   }) : id = const Uuid().v4();
 }

@@ -29,6 +29,7 @@ class ProductList with ChangeNotifier {
               image: item['image'] as String,
               dueDate: DateTime.parse(item['expireDate'] as String),
               storeId: item['store_id'] as int,
+              createdAt: DateTime.parse(item['createdAt'] as String),
             ),
           )
           .toList(),
