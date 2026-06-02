@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:valitrack/model/store.dart';
+import 'package:valitrack/util/enum/quantity_operation.dart';
 import 'package:valitrack/util/store_table/store_table.dart';
 
 class StoreList with ChangeNotifier {
@@ -71,7 +72,14 @@ class StoreList with ChangeNotifier {
   void incrementQuantityProduct(int storeId) {
     if (!_items.containsKey(storeId)) return;
     _items[storeId]?.incrementRegisteredProducts();
-    StoreTable.incrementRegisteredProduct(_items[storeId]!);
+    StoreTable.changeQuantityRegisteredProducts(_items[storeId]!.id!, QuantityOperation.increment);
+    notifyListeners();
+  }
+
+  void decrementQuantityProduct(int storeId) {
+    if (!_items.containsKey(storeId)) return;
+    _items[storeId]?.decrementRegisteredProducts();
+    StoreTable.changeQuantityRegisteredProducts(_items[storeId]!.id!, QuantityOperation.decrement);
     notifyListeners();
   }
 }

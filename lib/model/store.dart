@@ -29,6 +29,10 @@ class Store with ChangeNotifier {
     quantityRegisteredProducts = quantityRegisteredProducts + 1;
     notifyListeners();
   }
-  
 
+  void decrementRegisteredProducts() {
+    quantityRegisteredProducts = quantityRegisteredProducts - 1;
+    notifyListeners();
+  }
+  
 }

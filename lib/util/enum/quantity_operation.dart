@@ -1,0 +1,4 @@
+enum QuantityOperation {
+  increment,
+  decrement,
+}
