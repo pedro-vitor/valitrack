@@ -45,7 +45,7 @@ class _StoreFormState extends State<StoreForm> {
         return;
       }
 
-      final name = nameStore.text;
+      final name = nameStore.text.trim();
 
       if (name.isEmpty) return;
 

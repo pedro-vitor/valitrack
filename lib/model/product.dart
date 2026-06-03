@@ -1,7 +1,6 @@
-import 'package:uuid/uuid.dart';
 
 class Product {
-  final String id;
+  int? id;
   final String description;
   final String codeBar;
   final int quantity;
@@ -29,5 +28,5 @@ class Product {
     required this.dueDate,
     required this.storeId,
     required this.createdAt,
-  }) : id = const Uuid().v4();
+  });
 }

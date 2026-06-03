@@ -7,8 +7,40 @@ import 'package:valitrack/providers/product_list.dart';
 import 'package:valitrack/util/app_routes.dart';
 import '../model/product.dart';
 
-class ShortDatedProduct extends StatelessWidget {
+class ShortDatedProduct extends StatefulWidget {
   const ShortDatedProduct({super.key});
+
+  @override
+  State<ShortDatedProduct> createState() => _ShortDatedProductState();
+}
+
+class _ShortDatedProductState extends State<ShortDatedProduct> {
+  late Future<Map<DateTime, List<Product>>> _futureProducts;
+  late Store store;
+  late ProductList provider;
+
+  bool _initialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_initialized) {
+      store = ModalRoute.of(context)!.settings.arguments as Store;
+
+      provider = Provider.of<ProductList>(context, listen: false);
+
+      _futureProducts = provider.getSessionsPerDueDate(store.id!);
+
+      _initialized = true;
+    }
+  }
+
+  void refreshProducts() {
+    setState(() {
+      _futureProducts = provider.getSessionsPerDueDate(store.id!);
+    });
+  }
 
   Color _colorsIndication(DateTime dueDate) {
     final currentDate = DateTime.now();
@@ -30,19 +62,58 @@ class ShortDatedProduct extends StatelessWidget {
     }
   }
 
+  void showModalOptionsProduct(
+    BuildContext context,
+    Product product,
+    Function(Product) onDelete,
+  ) {
+    showDialog(
+      context: context,
+      barrierDismissible: true, // Permite fechar ao clicar fora
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Escolha uma ação', textAlign: TextAlign.center),
+        content: const Text(
+          'O que você deseja fazer com este item?',
+          textAlign: TextAlign.center,
+        ),
+        actionsAlignment: MainAxisAlignment.center, // Centraliza os botões
+        actions: [
+          // Ação 1: Editar
+          TextButton.icon(
+            icon: const Icon(Icons.edit, color: Colors.blue),
+            label: const Text('Editar'),
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await Navigator.pushNamed(
+                ctx,
+                AppRoutes.productForm,
+                arguments: [product.storeId, product],
+              );
+              refreshProducts();
+            },
+          ),
+          // Ação 3: Excluir
+          TextButton.icon(
+            icon: const Icon(Icons.delete, color: Colors.red),
+            label: const Text('Excluir'),
+            onPressed: () {
+              onDelete(product);
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final Store store = ModalRoute.of(context)?.settings.arguments as Store;
 
-    final provider = Provider.of<ProductList>(context);
-    // final products = await provider.getProductByStore(store.id);
-
-    // final Map<DateTime, List<Product>> sessionsProducts =
-    //     createSessionPerDueDate(products);
-
-    // final getKeys = sessionsProducts.keys.toList();
-
-    List<Widget> itemList(List<Product> listProducts) {
+    List<Widget> itemList(
+      List<Product> listProducts,
+      Function(String) onDelete,
+    ) {
       List<Widget> itemsList = [];
       for (int i = 0; i < listProducts.length; i++) {
         itemsList.add(
@@ -50,8 +121,10 @@ class ShortDatedProduct extends StatelessWidget {
             value: provider,
             child: ListProductItem(
               product: listProducts[i],
-              deleteProduct: (_) {},
+              deleteProduct: onDelete,
               hasDivider: i != listProducts.length - 1,
+              showModalOptionsProduct: () =>
+                  showModalOptionsProduct(context, listProducts[i], (_) {}),
             ),
           ),
         );
@@ -60,13 +133,11 @@ class ShortDatedProduct extends StatelessWidget {
     }
 
     return FutureBuilder(
-      future: provider.getSessionsPerDueDate(store.id!),
+      future: _futureProducts,
       builder: ((context, snapshot) {
-        if(snapshot.connectionState == ConnectionState.waiting) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
+            body: Center(child: CircularProgressIndicator()),
           );
         }
         final Map<DateTime, List<Product>> sessionsProducts =
@@ -148,6 +219,7 @@ class ShortDatedProduct extends StatelessWidget {
                                   ),
                                   ...itemList(
                                     (sessionsProducts[key] as List<Product>),
+                                    (_) {},
                                   ),
                                 ],
                               ),
@@ -164,7 +236,7 @@ class ShortDatedProduct extends StatelessWidget {
               // showFormProduct(context, addNewProduct);
               Navigator.of(
                 context,
-              ).pushNamed(AppRoutes.productForm, arguments: store.id);
+              ).pushNamed(AppRoutes.productForm, arguments: [store.id]);
             },
             child: Icon(
               Icons.barcode_reader,

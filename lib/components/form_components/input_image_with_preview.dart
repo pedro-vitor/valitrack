@@ -7,9 +7,11 @@ import 'package:path_provider/path_provider.dart' as syspaths;
 
 class InputImageWithPreview extends StatefulWidget {
   final Function(File) onSelectedImage;
+  final String? image;
   const InputImageWithPreview({
     super.key,
     required this.onSelectedImage,
+    this.image,
   });
 
   @override
@@ -17,7 +19,13 @@ class InputImageWithPreview extends StatefulWidget {
 }
 
 class _InputImageWithPreviewState extends State<InputImageWithPreview> {
-  File? _storedImage;
+  late File? _storedImage;
+
+  @override
+  initState() {
+    super.initState();
+    _storedImage = widget.image == null || widget.image!.isEmpty ? null : File(widget.image!);
+  }
 
   Future<void> _takePicture() async {
     final ImagePicker picker = ImagePicker();

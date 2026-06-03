@@ -2,47 +2,31 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:valitrack/components/modals/option_product_modal.dart';
 import 'package:valitrack/model/product.dart';
+import 'package:valitrack/util/calcule_size_image.dart';
 
 class ListProductItem extends StatelessWidget {
   final Product product;
   final void Function(String) deleteProduct;
   final bool hasDivider;
   final File? image;
+  final void Function() showModalOptionsProduct;
 
   ListProductItem({
     super.key,
     required this.product,
     required this.deleteProduct,
     required this.hasDivider,
-  }): image = product.image != null ? File(product.image!) : null;
+    required this.showModalOptionsProduct,
+  }) : image = product.image != null ? File(product.image!) : null;
 
   Widget isExpired(DateTime dueDateProduct) {
     final currentDate = DateTime.now();
 
     if (currentDate.isAfter(dueDateProduct)) {
-      return const Icon(
-        Icons.warning_rounded,
-        size: 20,
-        color: Colors.red,
-      );
+      return const Icon(Icons.warning_rounded, size: 20, color: Colors.red);
     }
     return const Text('');
-  }
-
-  void showModal(
-      BuildContext context, Product product, Function(Product) onDelete) {
-    showDialog(
-      context: context,
-      barrierDismissible: true, // Permite fechar ao clicar fora
-      builder: (BuildContext context) {
-        return OptionProductModal(
-          product: product,
-          onDelete: onDelete,
-        );
-      },
-    );
   }
 
   void showModalImage(BuildContext context, File image) {
@@ -57,11 +41,19 @@ class ListProductItem extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           child: InteractiveViewer(
+            panEnabled: true, // Permite arrastar a imagem
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: product.image != null
-                  ? Image.file(image)
-                  : Image.asset('assets/image/no_image.png'),
+              child: SizedBox(
+                width: CalculeSizeImage.getWidthImage(image),
+                height: CalculeSizeImage.getHeightImage(image),
+                child: product.image != null
+                    ? Image.file(image, fit: BoxFit.cover)
+                    : Image.asset(
+                        'assets/image/no_image.png',
+                        fit: BoxFit.cover,
+                      ),
+              ),
             ),
           ),
         );
@@ -73,74 +65,21 @@ class ListProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Dismissible(
-          key: ValueKey(product.id),
-          background: Container(
-            decoration: const BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadiusDirectional.only(
-                bottomEnd: Radius.circular(10),
-                bottomStart: Radius.circular(10),
-              ),
-            ),
-            alignment: AlignmentDirectional.centerEnd,
-            padding: const EdgeInsets.only(right: 20),
-            child: const Icon(
-              Icons.delete,
-              color: Colors.white,
-              size: 35,
-            ),
-          ),
-          confirmDismiss: (_) async {
-            return showDialog<bool>(
-              context: context,
-              builder: (ctx) {
-                final navigator = Navigator.of(ctx);
-                return AlertDialog(
-                  title: const Text('Tem certeza?'),
-                  content: const Text('Quer remover esse item da lista?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => navigator.pop(false),
-                      child: const Text('Cancelar'),
-                    ),
-                    TextButton(
-                      onPressed: () => navigator.pop(true),
-                      child: Text(
-                        'Remover',
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.error),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
+        InkWell(
+          onLongPress: () => showModalOptionsProduct(),
           child: ListTile(
             leading: GestureDetector(
               onTap: () => showModalImage(context, image!),
               child: ClipRRect(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(5),
-                ),
+                borderRadius: const BorderRadius.all(Radius.circular(5)),
                 child: product.image != null
-                    ? Image.file(
-                        image!,
-                        height: 60,
-                      )
-                    : Image.asset(
-                        'assets/image/no_image.png',
-                        height: 60,
-                      ), 
+                    ? Image.file(image!, height: 60)
+                    : Image.asset('assets/image/no_image.png', height: 60),
               ),
             ),
             title: Text(
               product.description,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               softWrap: true,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -158,9 +97,7 @@ class ListProductItem extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(
-                      width: 5,
-                    ),
+                    const SizedBox(width: 5),
                     isExpired(product.dueDate),
                   ],
                 ),
@@ -192,10 +129,7 @@ class ListProductItem extends StatelessWidget {
           ),
         ),
         hasDivider
-            ? const Divider(
-                endIndent: 10,
-                indent: 10,
-              )
+            ? const Divider(endIndent: 10, indent: 10)
             : const SizedBox.shrink(),
       ],
     );

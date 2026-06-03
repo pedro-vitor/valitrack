@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:valitrack/components/form_components/input_image_with_preview.dart';
 import 'package:valitrack/components/mainAppbar/main_appbar.dart';
+import 'package:valitrack/model/product.dart';
 import 'package:valitrack/providers/product_list.dart';
 import 'package:valitrack/screens/barcode_reader_screen.dart';
 
@@ -23,6 +24,15 @@ class _ProductFormState extends State<ProductForm> {
   final dateMax = DateTime.now().year + 2;
   bool _isLoading = false;
   DateTime? _selectedDate;
+
+  void initializeFormData(Product product) {
+    _selectedDate = product.dueDate;
+    _formData['description'] = product.description;
+    _formData['quantity'] = product.quantity;
+    _formData['codeBar'] = product.codeBar;
+    _formData['image'] = product.image ?? '';
+    _formData['expireDate'] = product.dueDate.toIso8601String();
+  }
 
   void _selectImage(File selectedImage) {
     setState(() {
@@ -59,9 +69,24 @@ class _ProductFormState extends State<ProductForm> {
 
   @override
   Widget build(BuildContext context) {
-    final String storeId =
-        ModalRoute.of(context)?.settings.arguments.toString() ?? '';
+    final List<dynamic> arguments =
+        ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+
+    final int storeId = arguments[0];
+    final Product? product = arguments.length > 1
+        ? arguments[1] as Product
+        : null;
+
+    if (product != null) {
+      initializeFormData(product);
+    }
+
     final provider = Provider.of<ProductList>(context, listen: false);
+
+    void _addInforToCreateProduct() {
+      _formData['store_id'] = storeId;
+      _formData['createdAt'] = DateTime.now().toIso8601String();
+    }
 
     void submitForm() {
       // chamar as validações.
@@ -69,17 +94,23 @@ class _ProductFormState extends State<ProductForm> {
       if (!isValidate) {
         return;
       }
+
       _formKey.currentState?.save();
-      _formData['store_id'] = storeId;
-      _formData['createdAt'] = DateTime.now().toIso8601String();
+
+      if(product == null) {
+        _addInforToCreateProduct();
+      } else {
+        _formData['id'] = product.id!;
+      }
 
       setState(() {
         _isLoading = true;
       });
 
       try {
-        // provider.saveProduct(_formData);
-        provider.saveProductOnDb(_formData, int.parse(storeId));
+        product == null
+            ? provider.saveProductOnDb(_formData, int.parse(storeId.toString()))
+            : provider.updateProductOnDb(_formData, product.id!);
         Navigator.of(context).pop();
       } catch (e) {
         if (!mounted) return;
@@ -103,7 +134,7 @@ class _ProductFormState extends State<ProductForm> {
 
     return Scaffold(
       appBar: MainAppbar(
-        title: 'Cadastrar Produto',
+        title: product != null ? 'Atualizar Produto' : 'Cadastrar Produto',
         listActions: [
           IconButton(onPressed: submitForm, icon: const Icon(Icons.save)),
         ],
@@ -120,6 +151,7 @@ class _ProductFormState extends State<ProductForm> {
                       margin: const EdgeInsets.symmetric(vertical: 20),
                       child: InputImageWithPreview(
                         onSelectedImage: _selectImage,
+                        image: _formData['image']?.toString(),
                       ),
                     ),
                     TextFormField(
@@ -128,15 +160,15 @@ class _ProductFormState extends State<ProductForm> {
                       textInputAction: TextInputAction.next,
                       textCapitalization: TextCapitalization.sentences,
                       onSaved: (description) =>
-                          _formData['description'] = description ?? '',
+                          _formData['description'] = description?.trim() ?? '',
                       validator: (descriptionInput) {
-                        final description = descriptionInput ?? '';
-                        if (description.trim().isEmpty) {
+                        final description = descriptionInput?.trim() ?? '';
+                        if (description.isEmpty) {
                           return 'Descrição obrigatória';
                         }
 
-                        if (description.trim().length < 5) {
-                          return 'Descrição precisar no mínimo de 3 letras.';
+                        if (description.length < 5) {
+                          return 'Descrição precisar no mínimo de 5 letras.';
                         }
                         return null;
                       },
@@ -178,8 +210,10 @@ class _ProductFormState extends State<ProductForm> {
                         children: [
                           Expanded(
                             child: Text(
-                              _formData['codeBar']?.toString() ??
-                                  'Leia o Código de Barras',
+                              _formData['codeBar'] == null ||
+                                      _formData['codeBar']!.toString().isEmpty
+                                  ? 'Leia o Código de Barras'
+                                  : '${_formData['codeBar']}',
                             ),
                           ),
                           Container(
@@ -202,10 +236,15 @@ class _ProductFormState extends State<ProductForm> {
                               'Data Selecionada: ${_selectedDate == null ? '' : DateFormat('dd/MM/yy').format(_selectedDate as DateTime)}',
                             ),
                           ),
-                          ElevatedButton(
-                            onPressed: () => _showDatePicker(),
-                            child: const Text('Selecione a Data'),
-                          ),
+                          product == null
+                              ? Container(
+                                  margin: const EdgeInsets.only(top: 10),
+                                  child: ElevatedButton(
+                                    onPressed: _showDatePicker,
+                                    child: const Text('Selecionar data'),
+                                  ),
+                                )
+                              : Container(),
                         ],
                       ),
                     ),

@@ -17,14 +17,14 @@ class ProductTable {
     );
   }
 
-  static Future<void> update(int id, Map<String, Object> data) async {
+  static Future<void> update(int productId, Map<String, Object> data) async {
     final db = await DbUtil.dataBase();
 
     await db.update(
       NamesTablesDb.product.value,
       data,
       where: 'id = ?',
-      whereArgs: [id],
+      whereArgs: [productId],
     );
   }
 

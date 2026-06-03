@@ -22,7 +22,7 @@ class ProductList with ChangeNotifier {
       (list) => list
           .map(
             (item) => Product(
-              id: item['id'].toString(),
+              id: item['id'],
               description: item['description'] as String,
               codeBar: item['codeBar'] as String,
               quantity: item['quantity'] as int,
@@ -51,5 +51,10 @@ class ProductList with ChangeNotifier {
 
   void _addNewProductOnDB(Map<String, Object> formDatas) async {
     await ProductTable.insert(formDatas);
+  }
+
+  void updateProductOnDb(Map<String, Object> formDatas, int productId) async {
+    await ProductTable.update(productId, formDatas);
+    notifyListeners();
   }
 }

@@ -1,4 +1,3 @@
-import 'package:valitrack/model/store.dart';
 import 'package:valitrack/util/db_util.dart';
 import 'package:valitrack/util/enum/quantity_operation.dart';
 import 'package:valitrack/util/names_tables_db.dart';
