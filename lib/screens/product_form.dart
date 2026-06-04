@@ -24,6 +24,32 @@ class _ProductFormState extends State<ProductForm> {
   final dateMax = DateTime.now().year + 2;
   bool _isLoading = false;
   DateTime? _selectedDate;
+  late int storeId;
+  late Product? product;
+  late ProductList provider;
+  bool _initialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if(!_initialized) {
+      final List<dynamic> arguments =
+        ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+
+      storeId = arguments[0];
+      product = arguments.length > 1
+          ? arguments[1] as Product
+          : null;
+
+      provider = Provider.of<ProductList>(context, listen: false);
+
+      if (product != null) {
+        initializeFormData(product!);
+      }
+      _initialized = true;
+    }
+  }
+
 
   void initializeFormData(Product product) {
     _selectedDate = product.dueDate;
@@ -69,21 +95,8 @@ class _ProductFormState extends State<ProductForm> {
 
   @override
   Widget build(BuildContext context) {
-    final List<dynamic> arguments =
-        ModalRoute.of(context)?.settings.arguments as List<dynamic>;
 
-    final int storeId = arguments[0];
-    final Product? product = arguments.length > 1
-        ? arguments[1] as Product
-        : null;
-
-    if (product != null) {
-      initializeFormData(product);
-    }
-
-    final provider = Provider.of<ProductList>(context, listen: false);
-
-    void _addInforToCreateProduct() {
+    void addInforToCreateProduct() {
       _formData['store_id'] = storeId;
       _formData['createdAt'] = DateTime.now().toIso8601String();
     }
@@ -98,9 +111,9 @@ class _ProductFormState extends State<ProductForm> {
       _formKey.currentState?.save();
 
       if(product == null) {
-        _addInforToCreateProduct();
+        addInforToCreateProduct();
       } else {
-        _formData['id'] = product.id!;
+        _formData['id'] = product!.id!;
       }
 
       setState(() {
@@ -110,7 +123,7 @@ class _ProductFormState extends State<ProductForm> {
       try {
         product == null
             ? provider.saveProductOnDb(_formData, int.parse(storeId.toString()))
-            : provider.updateProductOnDb(_formData, product.id!);
+            : provider.updateProductOnDb(_formData, product!.id!);
         Navigator.of(context).pop();
       } catch (e) {
         if (!mounted) return;
