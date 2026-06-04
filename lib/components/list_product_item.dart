@@ -7,7 +7,6 @@ import 'package:valitrack/util/calcule_size_image.dart';
 
 class ListProductItem extends StatelessWidget {
   final Product product;
-  final void Function(String) deleteProduct;
   final bool hasDivider;
   final File? image;
   final void Function() showModalOptionsProduct;
@@ -15,7 +14,6 @@ class ListProductItem extends StatelessWidget {
   ListProductItem({
     super.key,
     required this.product,
-    required this.deleteProduct,
     required this.hasDivider,
     required this.showModalOptionsProduct,
   }) : image = product.image != null ? File(product.image!) : null;

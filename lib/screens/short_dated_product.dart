@@ -150,7 +150,6 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
   Widget build(BuildContext context) {
     List<Widget> itemList(
       List<Product> listProducts,
-      Function(String) onDelete,
     ) {
       List<Widget> itemsList = [];
       for (int i = 0; i < listProducts.length; i++) {
@@ -159,7 +158,6 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
             value: provider,
             child: ListProductItem(
               product: listProducts[i],
-              deleteProduct: onDelete,
               hasDivider: i != listProducts.length - 1,
               showModalOptionsProduct: () =>
                   showModalOptionsProduct(context, listProducts[i]),
@@ -256,8 +254,7 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
                                     ),
                                   ),
                                   ...itemList(
-                                    (sessionsProducts[key] as List<Product>),
-                                    (_) {},
+                                    (sessionsProducts[key] as List<Product>)
                                   ),
                                 ],
                               ),
@@ -270,11 +267,11 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
           ),
           floatingActionButton: FloatingActionButton(
             backgroundColor: Theme.of(context).colorScheme.primary,
-            onPressed: () {
-              // showFormProduct(context, addNewProduct);
-              Navigator.of(
+            onPressed: () async {
+               await Navigator.of(
                 context,
               ).pushNamed(AppRoutes.productForm, arguments: [store.id]);
+              refreshProducts();
             },
             child: Icon(
               Icons.barcode_reader,
