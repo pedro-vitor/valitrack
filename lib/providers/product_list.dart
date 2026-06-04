@@ -57,4 +57,10 @@ class ProductList with ChangeNotifier {
     await ProductTable.update(productId, formDatas);
     notifyListeners();
   }
+
+  void deleteProductOnDb(int productId, int storeId) async {
+    await ProductTable.delete(productId);
+    providerStore.decrementQuantityProduct(storeId);
+    notifyListeners();
+  }
 }

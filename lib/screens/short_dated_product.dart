@@ -62,11 +62,47 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
     }
   }
 
-  void showModalOptionsProduct(
-    BuildContext context,
-    Product product,
-    Function(Product) onDelete,
-  ) {
+  Future<bool> confirmDeleteProduct(Product product) async {
+    return await showDialog(
+      context: context,
+      barrierDismissible: true, // Permite fechar ao clicar fora
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Confirmação de exclusão',
+          textAlign: TextAlign.center,
+        ),
+        content: const Text(
+          'Tem certeza que deseja excluir este item?',
+          textAlign: TextAlign.center,
+        ),
+        actionsAlignment: MainAxisAlignment.center, // Centraliza os botões
+        actions: [
+          // Ação 1: Confirmar exclusão
+          TextButton.icon(
+            icon: const Icon(Icons.delete, color: Colors.red),
+            label: const Text('Excluir'),
+            onPressed: () {
+              Navigator.pop(ctx, true); // Retorna true para confirmar exclusão
+            },
+          ),
+          // Ação 2: Cancelar
+          TextButton.icon(
+            icon: const Icon(Icons.cancel, color: Colors.grey),
+            label: const Text('Cancelar'),
+            onPressed: () {
+              Navigator.pop(ctx, false); // Retorna false para cancelar
+            },
+          ),
+        ],
+      ),
+    ).then(
+      (value) => value ?? false,
+    ); // Retorna false se o diálogo for fechado sem escolha
+  }
+
+
+  void showModalOptionsProduct(BuildContext context, Product product) {
     showDialog(
       context: context,
       barrierDismissible: true, // Permite fechar ao clicar fora
@@ -97,9 +133,12 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
           TextButton.icon(
             icon: const Icon(Icons.delete, color: Colors.red),
             label: const Text('Excluir'),
-            onPressed: () {
-              onDelete(product);
-              Navigator.pop(context);
+            onPressed: () async {
+              bool confirmed = await confirmDeleteProduct(product);
+              if (!confirmed) return;
+              provider.deleteProductOnDb(product.id!, product.storeId);
+              refreshProducts();
+              if(context.mounted) Navigator.pop(context);
             },
           ),
         ],
@@ -109,7 +148,6 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
 
   @override
   Widget build(BuildContext context) {
-
     List<Widget> itemList(
       List<Product> listProducts,
       Function(String) onDelete,
@@ -124,7 +162,7 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
               deleteProduct: onDelete,
               hasDivider: i != listProducts.length - 1,
               showModalOptionsProduct: () =>
-                  showModalOptionsProduct(context, listProducts[i], (_) {}),
+                  showModalOptionsProduct(context, listProducts[i]),
             ),
           ),
         );
