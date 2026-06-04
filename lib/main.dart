@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:valitrack/providers/product_list.dart';
 import 'package:valitrack/providers/store_list.dart';
@@ -37,6 +38,21 @@ class ValiTrack extends StatelessWidget {
           AppRoutes.settingsScreen: (_) => const SettingsScreen(),
         },
         debugShowCheckedModeBanner: false,
+        
+        // Configurações para o portugues
+        // 1. Define os delegados de tradução do Flutter
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        // 2. Define os idiomas suportados (incluindo o pt_BR)
+        supportedLocales: const [
+          Locale('pt', 'BR'), // Português do Brasil
+          Locale('en', 'US'), // Inglês como fallback
+        ],
+
+        locale: const Locale('pt', 'BR'),
       ),
     );
   }
