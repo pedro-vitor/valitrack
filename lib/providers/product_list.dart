@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:valitrack/model/product.dart';
 import 'package:valitrack/providers/store_list.dart';
+import 'package:valitrack/util/due_date_calculator.dart';
 import 'package:valitrack/util/product_table/product_table.dart';
 import 'package:valitrack/util/session_per_due_date.dart';
 
@@ -46,6 +47,12 @@ class ProductList with ChangeNotifier {
   void saveProductOnDb(Map<String, Object> formDatas, int storeId) {
     _addNewProductOnDB(formDatas);
     providerStore.incrementQuantityProduct(storeId);
+    int diffMonth = dueDateCalculator(DateTime.parse(formDatas['expireDate'] as String));
+
+    // "0" -> produto vence esse mês, "1" -> produto vence no próximo mês, "-1" -> produto já venceu.
+    if(diffMonth >= 0 && diffMonth <= 1) {
+      providerStore.incrementQuantityProductsToExpire(storeId);
+    }
     notifyListeners();
   }
 

@@ -127,8 +127,8 @@ class ListStoreItem extends StatelessWidget {
               children: [
                 Text(
                   store.quantityRegisteredProducts > 1
-                      ? '${store.quantityRegisteredProducts} cadastrados' 
-                      : '${store.quantityRegisteredProducts} cadastrado',
+                      ? '${store.quantityRegisteredProducts} produtos cadastrados' 
+                      : '${store.quantityRegisteredProducts} produto cadastrado',
                   style: const TextStyle(
                     fontSize: 12,
                     color: Colors.grey,
@@ -158,7 +158,7 @@ class ListStoreItem extends StatelessWidget {
                 Positioned(
                   top: 10,
                   child: Text(
-                    '${store.quantityExpiredProducts}',
+                    '${store.quantityProductsToExpire}',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimary,

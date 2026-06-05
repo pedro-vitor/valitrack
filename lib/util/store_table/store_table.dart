@@ -54,4 +54,17 @@ class StoreTable {
       [storeId],
     );
   }
+
+  static Future<void> changeQuantityProductsToExpire(int storeId , QuantityOperation operation) async {
+    final db = await DbUtil.dataBase();
+
+    await db.rawUpdate(
+      '''
+      UPDATE ${NamesTablesDb.store.value}
+      SET quantityProductsToExpire = quantityProductsToExpire ${operation == QuantityOperation.increment ? '+' : '-'} 1
+      WHERE id = ?
+      ''',
+      [storeId],
+    );
+  }
 }

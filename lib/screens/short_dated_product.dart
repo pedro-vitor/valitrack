@@ -5,6 +5,7 @@ import 'package:valitrack/components/mainAppbar/main_appbar.dart';
 import 'package:valitrack/model/store.dart';
 import 'package:valitrack/providers/product_list.dart';
 import 'package:valitrack/util/app_routes.dart';
+import 'package:valitrack/util/due_date_calculator.dart';
 import '../model/product.dart';
 
 class ShortDatedProduct extends StatefulWidget {
@@ -43,13 +44,7 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
   }
 
   Color _colorsIndication(DateTime dueDate) {
-    final currentDate = DateTime.now();
-
-    // Calcula a diferença total de meses
-    // Ex: (2026 * 12 + 1) - (2025 * 12 + 12) = 1 mês de diferença
-    final diffMonth =
-        (dueDate.year - currentDate.year) * 12 +
-        (dueDate.month - currentDate.month);
+    final diffMonth = dueDateCalculator(dueDate);
 
     if (diffMonth < 0) {
       return Colors.black87;

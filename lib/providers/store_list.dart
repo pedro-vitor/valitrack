@@ -69,6 +69,7 @@ class StoreList with ChangeNotifier {
     notifyListeners();
   }
 
+// incrementa e decrementa a quantidade de produtos registrados, e atualiza o banco de dados com a nova quantidade.
   void incrementQuantityProduct(int storeId) {
     if (!_items.containsKey(storeId)) return;
     _items[storeId]?.incrementRegisteredProducts();
@@ -80,6 +81,21 @@ class StoreList with ChangeNotifier {
     if (!_items.containsKey(storeId)) return;
     _items[storeId]?.decrementRegisteredProducts();
     StoreTable.changeQuantityRegisteredProducts(_items[storeId]!.id!, QuantityOperation.decrement);
+    notifyListeners();
+  }
+
+// incrementa e decrementa a quantidade de produtos para vencer, e atualiza o banco de dados com a nova quantidade.
+  void incrementQuantityProductsToExpire(int storeId) {
+    if (!_items.containsKey(storeId)) return;
+    _items[storeId]?.incrementProductsToExpire();
+    StoreTable.changeQuantityProductsToExpire(_items[storeId]!.id!, QuantityOperation.increment);
+    notifyListeners();
+  }
+
+  void decrementQuantityProductsToExpire(int storeId) {
+    if (!_items.containsKey(storeId)) return;
+    _items[storeId]?.decrementProductsToExpire();
+    StoreTable.changeQuantityProductsToExpire(_items[storeId]!.id!, QuantityOperation.decrement);
     notifyListeners();
   }
 }

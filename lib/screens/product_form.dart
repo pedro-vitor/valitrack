@@ -101,6 +101,11 @@ class _ProductFormState extends State<ProductForm> {
       _formData['createdAt'] = DateTime.now().toIso8601String();
     }
 
+    void saveProduct() {
+      provider.saveProductOnDb(_formData, int.parse(storeId.toString()));
+      // TODO: implementar o incremento na store caso a data de vencimento for igual ou menos a 2meses.
+    }
+
     void submitForm() {
       // chamar as validações.
       final isValidate = _formKey.currentState?.validate() ?? false;
