@@ -96,7 +96,6 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
     ); // Retorna false se o diálogo for fechado sem escolha
   }
 
-
   void showModalOptionsProduct(BuildContext context, Product product) {
     showDialog(
       context: context,
@@ -126,14 +125,10 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
           ),
           // Ação 3: Excluir
           TextButton.icon(
-            icon: const Icon(Icons.delete, color: Colors.red),
-            label: const Text('Excluir'),
-            onPressed: () async {
-              bool confirmed = await confirmDeleteProduct(product);
-              if (!confirmed) return;
-              provider.deleteProductOnDb(product.id!, product.storeId);
-              refreshProducts();
-              if(context.mounted) Navigator.pop(context);
+            icon: const Icon(Icons.remove_circle_outline_rounded, color: Colors.red),
+            label: const Text('Recolher'),
+            onPressed: () {
+              Navigator.pop(ctx);
             },
           ),
         ],
@@ -141,11 +136,14 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
     );
   }
 
+  void deleteProduct(Product product, BuildContext context) async {
+    provider.deleteProductOnDb(product.id!, product.storeId);
+    refreshProducts();
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<Widget> itemList(
-      List<Product> listProducts,
-    ) {
+    List<Widget> itemList(List<Product> listProducts) {
       List<Widget> itemsList = [];
       for (int i = 0; i < listProducts.length; i++) {
         itemsList.add(
@@ -156,6 +154,7 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
               hasDivider: i != listProducts.length - 1,
               showModalOptionsProduct: () =>
                   showModalOptionsProduct(context, listProducts[i]),
+              deleteProduct: (product) => deleteProduct(product, context),
             ),
           ),
         );
@@ -249,7 +248,7 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
                                     ),
                                   ),
                                   ...itemList(
-                                    (sessionsProducts[key] as List<Product>)
+                                    (sessionsProducts[key] as List<Product>),
                                   ),
                                 ],
                               ),
@@ -263,7 +262,7 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
           floatingActionButton: FloatingActionButton(
             backgroundColor: Theme.of(context).colorScheme.primary,
             onPressed: () async {
-               await Navigator.of(
+              await Navigator.of(
                 context,
               ).pushNamed(AppRoutes.productForm, arguments: [store.id]);
               refreshProducts();

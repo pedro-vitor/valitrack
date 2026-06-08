@@ -10,12 +10,14 @@ class ListProductItem extends StatelessWidget {
   final bool hasDivider;
   final File? image;
   final void Function() showModalOptionsProduct;
+  final void Function(Product) deleteProduct;
 
   ListProductItem({
     super.key,
     required this.product,
     required this.hasDivider,
     required this.showModalOptionsProduct,
+    required this.deleteProduct,
   }) : image = product.image != null ? File(product.image!) : null;
 
   Widget isExpired(DateTime dueDateProduct) {
@@ -65,63 +67,106 @@ class ListProductItem extends StatelessWidget {
       children: [
         InkWell(
           onLongPress: () => showModalOptionsProduct(),
-          child: ListTile(
-            leading: GestureDetector(
-              onTap: () => showModalImage(context, image!),
-              child: ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(5)),
-                child: product.image != null
-                    ? Image.file(image!, height: 60)
-                    : Image.asset('assets/image/no_image.png', height: 60),
+          child: Dismissible(
+            key: ValueKey(product.id),
+            direction: DismissDirection.endToStart,
+            background: Container(
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.only(
+                  bottomRight: Radius.circular(10),
+                  bottomLeft: Radius.circular(10),
+                ),
+                color: Colors.red,
               ),
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: const Icon(Icons.delete, color: Colors.white, size: 30),
             ),
-            title: Text(
-              product.description,
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              softWrap: true,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      DateFormat('dd/MM/yyy').format(product.dueDate),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Color.fromARGB(255, 112, 112, 112),
-                        fontWeight: FontWeight.bold,
-                      ),
+            confirmDismiss: (direction) async {
+              return await showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Confirmar Exclusão'),
+                  content: const Text(
+                    'Tem certeza que deseja excluir este item?',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx, false),
+                      child: const Text('Cancelar'),
                     ),
-                    const SizedBox(width: 5),
-                    isExpired(product.dueDate),
+                    TextButton(
+                      onPressed: () {
+                        deleteProduct(product);
+                        Navigator.pop(ctx, true);
+                      },
+                      child: const Text('Excluir'),
+                    ),
                   ],
                 ),
-                Text(
-                  product.codeBar,
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: Color.fromARGB(255, 134, 134, 134),
-                  ),
+              );
+            },
+            child: ListTile(
+              leading: GestureDetector(
+                onTap: () => showModalImage(context, image!),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.all(Radius.circular(5)),
+                  child: product.image != null
+                      ? Image.file(image!, height: 60)
+                      : Image.asset('assets/image/no_image.png', height: 60),
                 ),
-              ],
-            ),
-            trailing: CircleAvatar(
-              backgroundColor: const Color.fromARGB(255, 199, 199, 199),
-              radius: 26,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+              ),
+              title: Text(
+                product.description,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+                softWrap: true,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Row(
+                    children: [
+                      Text(
+                        DateFormat('dd/MM/yyy').format(product.dueDate),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color.fromARGB(255, 112, 112, 112),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      isExpired(product.dueDate),
+                    ],
+                  ),
                   Text(
-                    product.quantity.toString(),
+                    product.codeBar,
                     style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 10,
+                      color: Color.fromARGB(255, 134, 134, 134),
                     ),
                   ),
                 ],
+              ),
+              trailing: CircleAvatar(
+                backgroundColor: const Color.fromARGB(255, 199, 199, 199),
+                radius: 26,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      product.quantity.toString(),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
