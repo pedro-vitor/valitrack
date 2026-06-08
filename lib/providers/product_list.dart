@@ -65,8 +65,21 @@ class ProductList with ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteProductOnDb(int productId, int storeId) async {
+  void deleteProductOnDb(int productId, DateTime dueDateProduct, int storeId) async {
     await ProductTable.delete(productId);
+    _verifyIfProductToExpire(dueDateProduct, storeId);
+    notifyListeners();
+  }
+
+  void _verifyIfProductToExpire(DateTime dueDate, int storeId) async {
+    int diffMonth = dueDateCalculator(dueDate);
+    if(diffMonth < 0) {
+      //TODO: chamar decrementar os produtos já vencidos (quantityExpiredProducts)
+    }
+
+    if(diffMonth >= 0 && diffMonth <= 1) {
+      providerStore.decrementQuantityProductsToExpire(storeId);
+    }
     providerStore.decrementQuantityProduct(storeId);
     notifyListeners();
   }

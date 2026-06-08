@@ -125,7 +125,10 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
           ),
           // Ação 3: Excluir
           TextButton.icon(
-            icon: const Icon(Icons.remove_circle_outline_rounded, color: Colors.red),
+            icon: const Icon(
+              Icons.remove_circle_outline_rounded,
+              color: Colors.red,
+            ),
             label: const Text('Recolher'),
             onPressed: () {
               Navigator.pop(ctx);
@@ -137,7 +140,7 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
   }
 
   void deleteProduct(Product product, BuildContext context) async {
-    provider.deleteProductOnDb(product.id!, product.storeId);
+    provider.deleteProductOnDb(product.id!, product.dueDate, product.storeId);
     refreshProducts();
   }
 
@@ -175,15 +178,7 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
         final getKeys = sessionsProducts.keys.toList();
 
         return Scaffold(
-          appBar: MainAppbar(
-            title: store.name,
-            listActions: [
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.barcode_reader),
-              ),
-            ],
-          ),
+          appBar: MainAppbar(title: store.name),
           body: Column(
             children: [
               Expanded(
