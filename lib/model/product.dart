@@ -1,4 +1,6 @@
 
+import 'package:valitrack/enums/product_status.dart';
+
 class Product {
   int? id;
   final String description;
@@ -8,6 +10,10 @@ class Product {
   final DateTime dueDate;
   final int storeId;
   final DateTime createdAt;
+// Dados para controle de retirarda do produto
+  ProductStatus status = ProductStatus.active;
+  int? quantityRemoved;
+  DateTime? removedAt;
 
   Product({
     required this.id,
