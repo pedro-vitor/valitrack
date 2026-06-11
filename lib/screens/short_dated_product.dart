@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:valitrack/components/ModalForms/remove_product_modal.dart';
 import 'package:valitrack/components/list_product_item.dart';
 import 'package:valitrack/components/mainAppbar/main_appbar.dart';
 import 'package:valitrack/model/store.dart';
@@ -96,6 +97,16 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
     ); // Retorna false se o diálogo for fechado sem escolha
   }
 
+  Future<bool> removeProductModal(BuildContext context, Product product) async {
+    return await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return RemoveProductModal(onRemoveProduct: onSubmitRemoveProduct, product: product);
+      },
+    ).then((value) => true);
+  }
+
   void showModalOptionsProduct(BuildContext context, Product product) {
     showDialog(
       context: context,
@@ -130,8 +141,9 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
               color: Colors.red,
             ),
             label: const Text('Recolher'),
-            onPressed: () {
-              Navigator.pop(ctx);
+            onPressed: () async {
+              await removeProductModal(context, product);
+              if(ctx.mounted) Navigator.pop(context);
             },
           ),
         ],
@@ -141,6 +153,14 @@ class _ShortDatedProductState extends State<ShortDatedProduct> {
 
   void deleteProduct(Product product, BuildContext context) async {
     provider.deleteProductOnDb(product.id!, product.dueDate, product.storeId);
+    refreshProducts();
+  }
+
+  void onSubmitRemoveProduct(
+    Product product,
+    int quantityRemoved,
+  ) async {
+    provider.removeProduct(product, quantityRemoved);
     refreshProducts();
   }
 

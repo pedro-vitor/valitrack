@@ -22,7 +22,7 @@ class DbUtil {
         );
 
         await db.execute(
-          'CREATE TABLE ${NamesTablesDb.product.value} ( id INTEGER PRIMARY KEY AUTOINCREMENT, store_id INTEGER NOT NULL, description VARCHAR(100) NOT NULL, codeBar VARCHAR(13) NOT NULL, quantity INT NOT NULL, image VARCHAR(200) NOT NULL, expireDate TEXT NOT NULL, createdAt TEXT NOT NULL, status TEXT NOT NULL DEFAULT \'ACTIVE\', quantityRemoved INT, withdrawnAt TEXT, FOREIGN KEY (store_id) REFERENCES store(id) ON DELETE CASCADE );',
+          'CREATE TABLE ${NamesTablesDb.product.value} ( id INTEGER PRIMARY KEY AUTOINCREMENT, store_id INTEGER NOT NULL, description VARCHAR(100) NOT NULL, codeBar VARCHAR(13) NOT NULL, quantity INT NOT NULL, image VARCHAR(200) NOT NULL, expireDate TEXT NOT NULL, createdAt TEXT NOT NULL, status TEXT NOT NULL DEFAULT \'ACTIVE\', quantityRemoved INT, removedAt TEXT, FOREIGN KEY (store_id) REFERENCES store(id) ON DELETE CASCADE );',
         );
       },
       version: 1,

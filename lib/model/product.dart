@@ -11,7 +11,7 @@ class Product {
   final int storeId;
   final DateTime createdAt;
 // Dados para controle de retirarda do produto
-  ProductStatus status = ProductStatus.active;
+  String status = ProductStatus.active.value;
   int? quantityRemoved;
   DateTime? removedAt;
 

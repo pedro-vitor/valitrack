@@ -1,3 +1,4 @@
+import 'package:valitrack/enums/product_status.dart';
 import 'package:valitrack/util/db_util.dart';
 import 'package:valitrack/util/names_tables_db.dart';
 
@@ -12,8 +13,8 @@ class ProductTable {
     final db = await DbUtil.dataBase();
     return db.query(
       NamesTablesDb.product.value,
-      where: 'store_id = ?',
-      whereArgs: [storeId],
+      where: 'store_id = ? AND status <> ?',
+      whereArgs: [storeId, ProductStatus.removed.value],
     );
   }
 

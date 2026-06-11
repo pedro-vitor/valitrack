@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:valitrack/enums/product_status.dart';
 import 'package:valitrack/model/product.dart';
 import 'package:valitrack/providers/store_list.dart';
 import 'package:valitrack/util/due_date_calculator.dart';
@@ -81,6 +82,18 @@ class ProductList with ChangeNotifier {
       providerStore.decrementQuantityProductsToExpire(storeId);
     }
     providerStore.decrementQuantityProduct(storeId);
+    notifyListeners();
+  }
+
+// funcão para fazer a retirada do produto, quando recolhido para troca ou avaria.
+  void removeProduct(Product product, int quantityRemoved) async {
+    Map<String, Object> datas = {
+      "status": ProductStatus.removed.value,
+      "quantityRemoved" : quantityRemoved,
+      "removedAt" : DateTime.now().toIso8601String(),
+    };
+    await ProductTable.update(product.id!, datas);
+    _verifyIfProductToExpire(product.dueDate, product.storeId);
     notifyListeners();
   }
 }
