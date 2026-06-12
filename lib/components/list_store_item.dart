@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:valitrack/components/infos/info_store.dart';
 import 'package:valitrack/model/store.dart';
 import 'package:valitrack/providers/store_list.dart';
 import 'package:valitrack/util/app_routes.dart';
@@ -48,6 +49,12 @@ class ListStoreItem extends StatelessWidget {
       );
     }
 
+    Future<void> showInfoStoreModal(Store store) async {
+      await showModalBottomSheet(context: context, builder: (_) {
+        return InfoStore(store: store);
+      });
+    }
+
     void optionsStore(BuildContext context, Store store) {
       showModalBottomSheet(
         context: context,
@@ -57,6 +64,14 @@ class ListStoreItem extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                ListTile(
+                  leading: const Icon(Icons.info_outline),
+                  title: const Text('Informações da loja'),
+                  onTap: () async {
+                    await showInfoStoreModal(store);
+                    if(context.mounted) Navigator.of(context).pop();
+                  },
+                ),
                 ListTile(
                   leading: const Icon(Icons.edit),
                   title: const Text('Editar Loja'),
@@ -126,9 +141,7 @@ class ListStoreItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  store.quantityRegisteredProducts > 1
-                      ? '${store.quantityRegisteredProducts} produtos cadastrados' 
-                      : '${store.quantityRegisteredProducts} produto cadastrado',
+                  '${store.quantityProductsToExpire} prox. ao vencimento',
                   style: const TextStyle(
                     fontSize: 12,
                     color: Colors.grey,
@@ -158,7 +171,7 @@ class ListStoreItem extends StatelessWidget {
                 Positioned(
                   top: 10,
                   child: Text(
-                    '${store.quantityProductsToExpire}',
+                    '${store.quantityExpiredProducts}',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimary,

@@ -57,44 +57,54 @@ class _StoreFormState extends State<StoreForm> {
       Navigator.pop(context);
     }
 
-    return Card(
-      elevation: 10,
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            TextField(
-              onSubmitted: (_) => submitForm(),
-              controller: nameStore,
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.all(10),
-                labelText: 'Nome da Loja',
-                labelStyle: TextStyle(
-                  fontSize: 16,
-                  color: Color.fromARGB(255, 125, 125, 125),
-                  fontWeight: FontWeight.bold,
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 50,
+            height: 5,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+          SizedBox(height: 10),
+          TextField(
+            onSubmitted: (_) => submitForm(),
+            controller: nameStore,
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.all(10),
+              labelText: 'Nome da Loja',
+              labelStyle: TextStyle(
+                fontSize: 16,
+                color: Color.fromARGB(255, 125, 125, 125),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            textCapitalization: TextCapitalization.sentences,
+          ),
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              ElevatedButton(
+                onPressed: () => submitForm(),
+                style: const ButtonStyle(
+                  elevation: WidgetStatePropertyAll(2),
+                ),
+                child: Text(
+                  widget.store == null ? 'Cadastrar' : 'Atualizar',
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
-              textCapitalization: TextCapitalization.sentences,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                  onPressed: () => submitForm(),
-                  style: const ButtonStyle(
-                    elevation: WidgetStatePropertyAll(2),
-                  ),
-                  child: Text(
-                    widget.store == null ? 'Cadastrar' : 'Atualizar',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }
