@@ -21,7 +21,8 @@ class ProductForm extends StatefulWidget {
 class _ProductFormState extends State<ProductForm> {
   final _formData = <String, Object>{};
   final _formKey = GlobalKey<FormState>();
-  final dateMax = DateTime.now().year + 2;
+  final dateMax = DateTime(DateTime.now().year + 2);
+  final firstAndInitalDate = DateTime.now().add(Duration(days: 1));
   bool _isLoading = false;
   DateTime? _selectedDate;
   late int storeId;
@@ -69,9 +70,9 @@ class _ProductFormState extends State<ProductForm> {
   void _showDatePicker() {
     showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(dateMax),
+      initialDate: firstAndInitalDate,
+      firstDate: firstAndInitalDate,
+      lastDate: dateMax,
     ).then((selectedDueDate) {
       if (selectedDueDate == null) {
         return;
